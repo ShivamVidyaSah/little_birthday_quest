@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>The Little Birthday Quest — Sayanika's Village</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <main class="shell">
+        <header>
+            <div><small>Sayanika's Village · A tiny place made with love</small>
+                <h1>The Little Birthday Quest</h1>
+            </div><b class="count"><span id="progress">0/3</span><small> birthday keepsakes</small></b>
+        </header>
+        <section class="quest">
+            <div><strong>🎀 Today's little quest</strong><small>Help the village prepare a birthday surprise!</small>
+            </div>
+            <div class="tasks"><span id="task-ribbon">○ Find the birthday ribbon</span><span id="task-cupcake">○ Collect
+                    a tiny cupcake</span><span id="task-star">○ Find the wishing star</span></div>
+        </section>
+        <section class="frame">
+            <div class="gamewrap"><canvas id="game" width="960" height="600"></canvas><canvas id="questLayer"
+                    width="960" height="600"></canvas>
+                <div id="toast">Find the three glowing keepsakes to unlock a birthday surprise!</div>
+                <div id="surprise" class="hidden">
+                    <article>
+                        <div class="spark">✦ ✧ ✦</div><small>A little message from the village</small>
+                        <h2>Happy Birthday, Sayanika!</h2>
+                        <p>May your days be full of soft mornings, kind friends, little adventures, and a thousand
+                            reasons to smile.</p>
+                        <p class="love">You are loved, today and every day. 💗</p><button id="close">Back to the
+                            village</button>
+                    </article>
+                </div>
+            </div>
+            <p class="help">🐾 Click a cat · 🎁 Collect the keepsakes · 🌼 Explore the village</p>
+        </section>
+        <footer>Made of little moments, soft paws, and lots of love.</footer>
+    </main>
+    <script src="game.js"></script>
+    <script src="day4.js"></script>
+</body>
+
+</html>
