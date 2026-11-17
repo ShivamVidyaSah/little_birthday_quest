@@ -101,15 +101,23 @@ h1 {
 
 .gamewrap {
     position: relative;
+    width: 100%;
+    max-width: 960px;
+    margin: 0 auto;
+    aspect-ratio: 960 / 600;
     overflow: hidden;
-    border-radius: 12px
+    border-radius: 12px;
 }
 
-#game {
-    display: block;
-    width: 100%;
-    height: auto
-}
+/* #game {
+
+     display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+    object-fit: contain;
+    image-rendering: pixelated;
+} 
 
 #questLayer {
     position: absolute;
@@ -117,6 +125,24 @@ h1 {
     width: 100%;
     height: 100%;
     pointer-events: none
+}*/
+
+#game,
+#questLayer {
+    position: absolute;
+    inset: 0;
+    display: block;
+    width: 100% !important;
+    height: 100% !important;
+    max-width: 100%;
+}
+
+#game {
+    image-rendering: pixelated;
+}
+
+#questLayer {
+    pointer-events: none;
 }
 
 #toast {
@@ -132,6 +158,44 @@ h1 {
     text-align: center;
     font-size: 13px;
     pointer-events: none
+}
+
+
+/* Mobile: move the message bar away from bottom objects */
+@media (max-width: 720px) {
+    #toast {
+        top: 8px;
+        bottom: auto;
+        left: 50%;
+        transform: translateX(-50%);
+        width: calc(100% - 20px);
+        max-width: 400px;
+        padding: 6px 6px;
+        font-size: 6px;
+        line-height: 1.0;
+        border-radius: 10px;
+        z-index: 5;
+    }
+}
+
+#reopen-message {
+    background: #fff8e9;
+    color: #a87583;
+    border: 2px solid #e8c9c1;
+    border-radius: 25px;
+    padding: 12px 22px;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 3px #e6d7c0;
+}
+
+#reopen-message:hover {
+    background: #f8e8e4;
+}
+
+#reopen-message:focus-visible {
+    outline: 3px solid #b987a0;
+    outline-offset: 3px;
 }
 
 #surprise {
@@ -160,39 +224,33 @@ article {
 }
 
 .scrollrable-article{
-    max-height: 500px;
+    max-height: 400px;
     overflow-y: auto;
     
 }
 
 /* WebKit (Chrome, Edge, Safari) */
-article::-webkit-scrollbar {
+.scrollrable-article::-webkit-scrollbar {
   width: 7px;
 
 }
 
-article::-webkit-scrollbar-track {
+.scrollrable-article::-webkit-scrollbar-track {
   
   background: #f5d0c3;
   border-radius: 100px;
   
 }
 
-article::-webkit-scrollbar-thumb {
+.scrollrable-article::-webkit-scrollbar-thumb {
   background: #fd8d65;
   border-radius: 3px;
 
 }
 
-article::-webkit-scrollbar-thumb:hover {
+.scrollrable-article::-webkit-scrollbar-thumb:hover {
   background: #f56835;
 }
-
-
-
-
-
-
 
 article h2 {
     color: #c77f91;
@@ -240,7 +298,10 @@ footer {
 
 @media(max-width:720px) {
     body {
-        padding: 8px
+        width: 100%;
+        padding: 8px;
+        margin: 0;
+        overflow-x: hidden;
     }
 
     .quest {
@@ -259,5 +320,206 @@ footer {
     #toast {
         font-size: 11px;
         padding: 7px
+    }
+}
+
+
+/* ===== MOBILE RESPONSIVENESS ===== */
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
+    overflow-x: hidden;
+}
+
+body {
+    -webkit-text-size-adjust: 100%;
+}
+
+canvas {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 100%;
+    image-rendering: pixelated;
+    touch-action: manipulation;
+}
+
+/* Main game and content containers */
+.game-container,
+.game-frame,
+.game-card,
+main {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
+}
+
+/* Prevent cards and quest objectives overflowing */
+.quest,
+.quest-card,
+.objectives,
+.objective-list {
+    max-width: 100%;
+    flex-wrap: wrap;
+}
+
+/* Tablet */
+@media (max-width: 768px) {
+    body {
+        padding: 12px;
+    }
+
+    h1 {
+        font-size: clamp(1.6rem, 6vw, 2.3rem);
+    }
+
+    .game-container,
+    .game-frame {
+        width: 100%;
+        margin: 0 auto;
+    }
+
+    canvas {
+        width: 100%;
+        height: auto;
+    }
+}
+
+/* Mobile phones */
+
+/* Phone portrait layout */
+@media screen and (max-width: 600px) {
+
+    body {
+        display: block;
+        width: 100%;
+        padding: 8px;
+        overflow-x: hidden;
+    }
+
+    .shell {
+        width: 100%;
+        max-width: 100%;
+    }
+
+    header {
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    header > div {
+        flex: 1 1 200px;
+        min-width: 0;
+    }
+
+    .count {
+        flex-shrink: 0;
+    }
+
+    .frame {
+        width: 100%;
+        padding: 7px;
+    }
+
+    .gamewrap {
+        width: 100%;
+        height: auto;
+    }
+
+    .quest {
+        width: 100%;
+    }
+
+    .tasks {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .tasks span {
+        max-width: 100%;
+    }
+}
+
+
+/* ===== FULL-SCREEN BIRTHDAY LETTER ON MOBILE ===== */
+
+@media screen and (max-width: 600px) {
+
+    #surprise {
+        position: fixed !important;
+        inset: 0 !important;
+        width: 100vw;
+        height: 100vh;
+        height: 100dvh;
+        z-index: 99999;
+
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        padding: 12px;
+        overflow-y: auto;
+        background: rgba(55, 47, 62, 0.94);
+    }
+
+    #surprise.hidden {
+        display: none !important;
+    }
+
+    #surprise article {
+        width: 100%;
+        max-width: 520px;
+        max-height: calc(100dvh - 24px);
+        height: auto;
+
+        display: flex;
+        flex-direction: column;
+
+        padding: 18px 16px;
+        margin: auto;
+        overflow: hidden;
+        border-radius: 20px;
+    }
+
+    #surprise article h2 {
+        font-size: 25px;
+        flex-shrink: 0;
+    }
+
+    #surprise .spark,
+    #surprise article > small {
+        flex-shrink: 0;
+    }
+
+    /* Only the letter scrolls */
+    #surprise .scrollrable-article {
+        flex: 1 1 auto;
+        min-height: 0;
+        max-height: none;
+        overflow-y: auto;
+        overscroll-behavior: contain;
+        -webkit-overflow-scrolling: touch;
+        padding: 0 5px 10px;
+    }
+
+    #surprise .scrollrable-article p {
+        font-size: 14px;
+        line-height: 1.7;
+        overflow-wrap: anywhere;
+    }
+
+    #surprise #close {
+        display: block;
+        width: 100%;
+        min-height: 46px;
+        margin: 15px 0 5px;
+        flex-shrink: 0;
     }
 }
