@@ -1,20 +1,190 @@
 (() => {
-    const canvas = document.getElementById('game'), layer = document.getElementById('questLayer'), ctx = layer.getContext('2d'), toast = document.getElementById('toast'), progress = document.getElementById('progress'), modal = document.getElementById('surprise');
-    let got = new Set(), tick = 0, confetti = false;
-    const bits = Array.from({ length: 90 }, () => ({ x: Math.random() * 960, y: Math.random() * 600, v: 35 + Math.random() * 90, s: 2 + Math.random() * 4 }));
-    const items = [{ id: 'ribbon', x: 300, y: 455, label: 'RIBBON', color: '#e77f9e' }, { id: 'cupcake', x: 650, y: 500, label: 'CUPCAKE', color: '#e8a0b0' }, { id: 'star', x: 875, y: 315, label: 'WISHING STAR', color: '#f2c94c' }];
-    function say(s) { toast.textContent = s; toast.style.opacity = '1' }
-    function collect(o) { if (got.has(o.id)) return; got.add(o.id); const label = { ribbon: 'Find the birthday ribbon', cupcake: 'Collect a tiny cupcake', star: 'Find the wishing star' }[o.id]; const el = document.getElementById('task-' + o.id); if (el) { el.classList.add('done'); el.textContent = '✓ ' + label } progress.textContent = got.size + '/3'; say(({ ribbon: 'A soft pink ribbon! Mochi says it will look lovely on the birthday gift.', cupcake: 'A tiny cupcake with a candle! Biscuit is very proud.', star: 'A wishing star! Pebble says to save your biggest wish for yourself.' })[o.id]); if (got.size === 3) { confetti = true; say('You did it! The cats have one last birthday surprise for you…'); setTimeout(() => modal.classList.remove('hidden'), 850) } }
-    canvas.addEventListener('click', e => { const r = canvas.getBoundingClientRect(), x = (e.clientX - r.left) * 960 / r.width, y = (e.clientY - r.top) * 600 / r.height, o = items.find(a => !got.has(a.id) && Math.hypot(a.x - x, a.y - y) < 62); if (o) { e.stopImmediatePropagation(); collect(o) } }, true);
-    document.getElementById('close').onclick = () => modal.classList.add('hidden');
-    function draw() {
-        ctx.clearRect(0, 0, 960, 600); items.filter(o => !got.has(o.id)).forEach(o => {
-            const p = 1 + Math.sin(tick * 4 + o.x) * .06; ctx.save(); ctx.translate(o.x, o.y); ctx.scale(p, p); ctx.shadowColor = 'rgba(255,255,255,.95)'; ctx.shadowBlur = 20; ctx.fillStyle = '#fff9df'; ctx.beginPath(); ctx.arc(0, 0, 37, 0, Math.PI * 2); ctx.fill(); ctx.shadowBlur = 0; ctx.lineWidth = 4; ctx.strokeStyle = '#fff'; ctx.stroke();
-            if (o.id === 'ribbon') { ctx.fillStyle = o.color; ctx.beginPath(); ctx.moveTo(-7, -8); ctx.lineTo(-30, -25); ctx.lineTo(-24, 5); ctx.lineTo(-7, 7); ctx.fill(); ctx.beginPath(); ctx.moveTo(7, -8); ctx.lineTo(30, -25); ctx.lineTo(24, 5); ctx.lineTo(7, 7); ctx.fill(); ctx.beginPath(); ctx.ellipse(0, -8, 10, 9, 0, 0, Math.PI * 2); ctx.fill(); ctx.fillRect(-4, 0, 8, 20) }
-            else if (o.id === 'cupcake') { ctx.fillStyle = '#d9829c'; ctx.beginPath(); ctx.moveTo(-21, -2); ctx.lineTo(21, -2); ctx.lineTo(15, 23); ctx.lineTo(-15, 23); ctx.closePath(); ctx.fill(); ctx.fillStyle = '#fff0d8'; ctx.beginPath(); ctx.arc(0, -3, 20, Math.PI, 0); ctx.fill(); ctx.fillStyle = '#f2b5c3'; ctx.beginPath(); ctx.arc(0, -18, 5, 0, Math.PI * 2); ctx.fill(); ctx.strokeStyle = '#d8a64e'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(0, -22); ctx.lineTo(0, -31); ctx.stroke(); ctx.fillStyle = '#ffd66e'; ctx.beginPath(); ctx.arc(0, -35, 5, 0, Math.PI * 2); ctx.fill() }
-            else { ctx.fillStyle = o.color; ctx.beginPath(); for (let i = 0; i < 10; i++) { const a = -Math.PI / 2 + i * Math.PI / 5, r = i % 2 ? 13 : 30; ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r) } ctx.closePath(); ctx.fill() }
-            ctx.fillStyle = '#5e5265'; ctx.font = 'bold 13px system-ui'; ctx.textAlign = 'center'; ctx.fillText(o.label, 0, 53); ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.roundRect(-39, 59, 78, 20, 9); ctx.fill(); ctx.fillStyle = '#66576c'; ctx.font = 'bold 11px system-ui'; ctx.fillText('CLICK ME', 0, 73); ctx.restore()
-        });
-        if (confetti) bits.forEach((b, i) => { ctx.fillStyle = ['#e99eae', '#f3d77d', '#a8c99d', '#b6a6d7'][i % 4]; ctx.fillRect(b.x, b.y, b.s, b.s); b.y += b.v / 60; if (b.y > 600) { b.y = -8; b.x = Math.random() * 960 } }); tick += 1 / 60; requestAnimationFrame(draw)
-    } draw();
+    const COLLECTIBLE_SCALE = 0.3;
+  const canvas = document.getElementById('game'),
+    layer = document.getElementById('questLayer'),
+    ctx = layer.getContext('2d'),
+    toast = document.getElementById('toast'),
+    progress = document.getElementById('progress'),
+    modal = document.getElementById('surprise');
+
+    const revisitMessage = document.getElementById('revisit-message');
+
+  let got = new Set(),
+    tick = 0,
+    confetti = false;
+  const bits = Array.from({
+    length: 90
+  }, () => ({
+    x: Math.random() * 960,
+    y: Math.random() * 600,
+    v: 35 + Math.random() * 90,
+    s: 2 + Math.random() * 4
+  }));
+  const items = [{
+    id: 'ribbon',
+    x: 300,
+    y: 455,
+    label: 'RIBBON',
+    color: '#e77f9e'
+  }, {
+    id: 'cupcake',
+    x: 650,
+    y: 500,
+    label: 'CUPCAKE',
+    color: '#e8a0b0'
+  }, {
+    id: 'star',
+    x: 875,
+    y: 315,
+    label: 'WISHING STAR',
+    color: '#f2c94c'
+  }];
+
+  function say(s) {
+    toast.textContent = s;
+    toast.style.opacity = '1'
+  }
+
+  function collect(o) {
+    if (got.has(o.id)) return;
+    got.add(o.id);
+    const label = {
+      ribbon: 'Find the birthday ribbon',
+      cupcake: 'Collect a tiny cupcake',
+      star: 'Find the wishing star'
+    } [o.id];
+    const el = document.getElementById('task-' + o.id);
+    if (el) {
+      el.classList.add('done');
+      el.textContent = '✓ ' + label
+    }
+    progress.textContent = got.size + '/3';
+    say(({
+      ribbon: 'A soft pink ribbon! Mochi says it will look lovely on the birthday gift.',
+      cupcake: 'A tiny cupcake with a candle! Biscuit is very proud.',
+      star: 'A wishing star! Pebble says to save your biggest wish for yourself.'
+    })[o.id]);
+    if (got.size === 3) {
+    confetti = true;
+
+    // Unlock the reread button only after all keepsakes are collected
+    revisitMessage.style.display = 'flex';
+
+    say('You did it! Got the message Shivam left for Sayanika. The cats of the village also want to wish you a happy birthday! 🎉.');
+
+    setTimeout(() => modal.classList.remove('hidden'), 850);
+}
+  }
+  canvas.addEventListener('click', e => {
+    const r = canvas.getBoundingClientRect(),
+      x = (e.clientX - r.left) * 960 / r.width,
+      y = (e.clientY - r.top) * 600 / r.height,
+      o = items.find(a => !got.has(a.id) && Math.hypot(a.x - x, a.y - y) < 62);
+    if (o) {
+      e.stopImmediatePropagation();
+      collect(o)
+    }
+  }, true);
+  document.getElementById('close').onclick = () => modal.classList.add('hidden');
+
+  function draw() {
+    ctx.clearRect(0, 0, 960, 600);
+    items.filter(o => !got.has(o.id)).forEach(o => {
+      const p = 1 + Math.sin(tick * 4 + o.x) * .06;
+      ctx.save();
+      ctx.translate(o.x, o.y);
+      ctx.scale(COLLECTIBLE_SCALE * p, COLLECTIBLE_SCALE * p);
+      ctx.scale(p, p);
+      ctx.shadowColor = 'rgba(255,255,255,.95)';
+      ctx.shadowBlur = 20;
+      ctx.fillStyle = '#fff9df';
+      ctx.beginPath();
+      ctx.arc(0, 0, 37, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowBlur = 0;
+      ctx.lineWidth = 4;
+      ctx.strokeStyle = '#fff';
+      ctx.stroke();
+      if (o.id === 'ribbon') {
+        ctx.fillStyle = o.color;
+        ctx.beginPath();
+        ctx.moveTo(-7, -8);
+        ctx.lineTo(-30, -25);
+        ctx.lineTo(-24, 5);
+        ctx.lineTo(-7, 7);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.moveTo(7, -8);
+        ctx.lineTo(30, -25);
+        ctx.lineTo(24, 5);
+        ctx.lineTo(7, 7);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.ellipse(0, -8, 10, 9, 0, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.fillRect(-4, 0, 8, 20)
+      } else if (o.id === 'cupcake') {
+        ctx.fillStyle = '#d9829c';
+        ctx.beginPath();
+        ctx.moveTo(-21, -2);
+        ctx.lineTo(21, -2);
+        ctx.lineTo(15, 23);
+        ctx.lineTo(-15, 23);
+        ctx.closePath();
+        ctx.fill();
+        ctx.fillStyle = '#fff0d8';
+        ctx.beginPath();
+        ctx.arc(0, -3, 20, Math.PI, 0);
+        ctx.fill();
+        ctx.fillStyle = '#f2b5c3';
+        ctx.beginPath();
+        ctx.arc(0, -18, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#d8a64e';
+        ctx.lineWidth = 4;
+        ctx.beginPath();
+        ctx.moveTo(0, -22);
+        ctx.lineTo(0, -31);
+        ctx.stroke();
+        ctx.fillStyle = '#ffd66e';
+        ctx.beginPath();
+        ctx.arc(0, -35, 5, 0, Math.PI * 2);
+        ctx.fill()
+      } else {
+        ctx.fillStyle = o.color;
+        ctx.beginPath();
+        for (let i = 0; i < 10; i++) {
+          const a = -Math.PI / 2 + i * Math.PI / 5,
+            r = i % 2 ? 13 : 30;
+          ctx.lineTo(Math.cos(a) * r, Math.sin(a) * r)
+        }
+        ctx.closePath();
+        ctx.fill()
+      }
+      ctx.fillStyle = '#5e5265';
+      ctx.font = 'bold 13px system-ui';
+      ctx.textAlign = 'center';
+      ctx.fillText(o.label, 0, 53);
+      ctx.fillStyle = '#fff';
+      ctx.beginPath();
+      ctx.roundRect(-39, 59, 78, 20, 9);
+      ctx.fill();
+      ctx.fillStyle = '#66576c';
+      ctx.font = 'bold 11px system-ui';
+      ctx.fillText('CLICK ME', 0, 73);
+      ctx.restore()
+    });
+    if (confetti) bits.forEach((b, i) => {
+      ctx.fillStyle = ['#e99eae', '#f3d77d', '#a8c99d', '#b6a6d7'][i % 4];
+      ctx.fillRect(b.x, b.y, b.s, b.s);
+      b.y += b.v / 60;
+      if (b.y > 600) {
+        b.y = -8;
+        b.x = Math.random() * 960
+      }
+    });
+    tick += 1 / 60;
+    requestAnimationFrame(draw)
+  }
+  draw();
 })();

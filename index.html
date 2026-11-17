@@ -4,13 +4,13 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <title>The Little Birthday Quest — Sayanika's Village</title>
+    <title>The Little Birthday Quest - Sayanika's Village</title>
     <link rel="stylesheet" href="style.css">
     
 </head>
 
 <body>
-    <audio id="bg-music" src="/assest/TunePocket-Joy-To-A-New-Day-1-Hour-Preview.mp3" autoplay unmuted loop></audio>
+    <audio id="bg-music" src="assest/sub_clair-soft-ambient-634887.mp3" autoplay loop unmuted preload="auto"></audio>
     <main class="shell">
         <header>
             <div><small>Sayanika's Village · A tiny place made with love</small>
@@ -18,7 +18,7 @@
             </div><button id="mute-btn">🔇</button><b class="count"><span id="progress">0/3</span><small> birthday keepsakes</small></b>
         </header>
         <section class="quest">
-            <div><strong>🎀 Today's little quest</strong><small>Help the village prepare a birthday surprise!</small>
+            <div><strong>🎀 Today's little quest</strong><small>Help the village prepare a birthday message!</small>
             </div>
             <div class="tasks"><span id="task-ribbon">○ Find the birthday ribbon</span><span id="task-cupcake">○ Collect
                     a tiny cupcake</span><span id="task-star">○ Find the wishing star</span></div>
@@ -74,11 +74,11 @@
             </div>
             <p class="help">🐾 Click a cat · 🎁 Collect the keepsakes · 🌼 Explore the village</p>
 
-            <div class="revisit-message">
-            <button id="reopen-message">
-                💌 Read the birthday message again
-            </button>
-</div>
+            <div class="revisit-message" id="revisit-message" style="display: none;">
+                <button id="reopen-message">
+                    💌 Read the birthday message again
+                </button>
+            </div>
         </section>
         <footer>Made of little moments, soft paws, and lots of love.</footer>
     </main>

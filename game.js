@@ -1,4 +1,13 @@
 (() => {
+  const audio = document.getElementById('bg-music');
+  const btn = document.getElementById('mute-btn');
+
+  btn.addEventListener('click' ,() => {
+            audio.muted = !audio.muted;
+            btn.textContent = audio.muted ? '🔊' : '🔇';
+  })
+
+
   const c = document.querySelector('canvas'),
     g = c.getContext('2d'),
     W = 960,
@@ -452,22 +461,49 @@
   }
   requestAnimationFrame(loop)
 
-  const audio = document.getElementById('bg-music');
-  const btn = document.getElementById('mute-btn');
+  
 
-  btn.addEventListener('click' ,() => {
-            audio.muted = !audio.muted;
-            btn.textContent = audio.muted ? '🔊' : '🔇';
-  })
-
-
-/* ===== REOPEN BIRTHDAY MESSAGE ===== */
+/* ===== BIRTHDAY MESSAGE UNLOCK SYSTEM ===== */
 
 const reopenMessage = document.getElementById("reopen-message");
 const birthdaySurprise = document.getElementById("surprise");
+const progressDisplay = document.getElementById("progress");
+const revisitContainer = document.querySelector(".revisit-message");
 
+function updateMessageUnlock() {
+    const progressText = progressDisplay.textContent.trim();
+    const match = progressText.match(/(\d+)\s*\/\s*(\d+)/);
+
+    if (!match) return;
+
+    const collected = Number(match[1]);
+    const total = Number(match[2]);
+
+    if (collected >= total && total > 0) {
+        revisitContainer.classList.add("unlocked");
+    } else {
+        revisitContainer.classList.remove("unlocked");
+        birthdaySurprise.classList.add("hidden");
+    }
+}
+
+// Check immediately and whenever quest progress changes
+updateMessageUnlock();
+
+const progressObserver = new MutationObserver(updateMessageUnlock);
+
+progressObserver.observe(progressDisplay, {
+    childList: true,
+    characterData: true,
+    subtree: true
+});
+
+// Reopen the message only after all keepsakes are collected
 reopenMessage.addEventListener("click", () => {
+    if (!revisitContainer.classList.contains("unlocked")) return;
+
     birthdaySurprise.classList.remove("hidden");
 });
+
 
 })();
